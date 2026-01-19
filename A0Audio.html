@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio de Escucha Completo - Español</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #eef2f7; display: flex; justify-content: center; padding-top: 50px; }
+        .contenedor-audio { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); width: 550px; text-align: center; }
+        audio { width: 100%; margin-bottom: 20px; }
+        
+        #zona-interactiva {
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+            margin-top: 20px;
+            display: none; 
+            text-align: left;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        input {
+            padding: 5px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            width: 100px;
+            text-align: center;
+            font-size: 16px;
+            background-color: #fff9c4;
+            outline: none;
+            margin: 2px;
+        }
+
+        input:focus { border-color: #1a73e8; background-color: #fff; }
+
+        button {
+            margin-top: 20px;
+            background-color: #1a73e8;
+            color: white; border: none; padding: 12px;
+            border-radius: 5px; width: 100%; cursor: pointer; font-size: 16px;
+        }
+        
+        button:hover { background-color: #1557b0; }
+
+        #feedback { margin-top: 15px; font-weight: bold; text-align: center; min-height: 20px; }
+        .error { color: #dc3545; }
+        .exito { color: #28a745; }
+        
+        strong { color: #333; }
+        p { line-height: 1.6; }
+    </style>
+</head>
+<body>
+
+<div class="contenedor-audio">
+    <h2>Conversación Completa</h2>
+    <p>Escucha el diálogo y completa los espacios en blanco:</p>
+    
+    <audio id="miAudio" controls>
+        <source src="https://github.com/Duppetheimmer/Spanish/raw/refs/heads/main/conv.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="zona-interactiva">
+        <div id="contenido-pregunta"></div>
+        <button onclick="verificarParadaActual()">Comprobar respuestas</button>
+        <div id="feedback"></div>
+    </div>
+</div>
+
+<script>
+    const audio = document.getElementById('miAudio');
+    const zonaInteractiva = document.getElementById('zona-interactiva');
+    const contenidoPregunta = document.getElementById('contenido-pregunta');
+    const feedback = document.getElementById('feedback');
+
+    // --- CONFIGURACIÓN DE TODAS LAS PARADAS ---
+    const paradas = [
+        {
+            tiempo: 5, 
+            html: `
+                <p><strong>Ana:</strong> Hola, buenos <input type="text" class="ans" data-correct="dias">.</p>
+                <p><strong>Luis:</strong> Hola, ¿cómo <input type="text" class="ans" data-correct="estas">?</p>
+            `
+        },
+        {
+            tiempo: 10, 
+            html: `
+                <p><strong>Ana:</strong> Muy <input type="text" class="ans" data-correct="bien">, gracias, ¿y tú?</p>
+                <p><strong>Luis:</strong> <input type="text" class="ans" data-correct="bien">, también.</p>
+            `
+        },
+        {
+            tiempo: 18, 
+            html: `
+                <p><strong>Luis:</strong> Me <input type="text" class="ans" data-correct="llamo"> Luis, ¿cómo te llamas?</p>
+                <p><strong>Ana:</strong> Yo soy Ana. Mucho <input type="text" class="ans" data-correct="gusto">.</p>
+                <p><strong>Luis:</strong> <input type="text" class="ans" data-correct="encantado">, Ana.</p>
+            `
+        },
+        {
+            tiempo: 24, 
+            html: `
+                <p><strong>Luis:</strong> ¿De <input type="text" class="ans" data-correct="donde"> eres?</p>
+                <p><strong>Ana:</strong> <input type="text" class="ans" data-correct="soy"> de España. ¿Y tú?</p>
+                <p><strong>Luis:</strong> Soy de México.</p>
+            `
+        },
+        {
+            tiempo: 35, 
+            html: `
+                <p><strong>Luis:</strong> ¿A qué te <input type="text" class="ans" data-correct="dedicas">?</p>
+                <p><strong>Ana:</strong> Soy estudiante de medicina. ¿Tú <input type="text" class="ans" data-correct="trabajas">?</p>
+                <p><strong>Luis:</strong> No, también soy estudiante. Estudio ingeniería.</p>
+            `
+        },
+        {
+            tiempo: 42, // Ajusta este tiempo según dónde termine tu audio
+            html: `
+                <p><strong>Luis:</strong> Entiendo. Hasta <input type="text" class="ans" data-correct="luego">, Ana.</p>
+                <p><strong>Ana:</strong> <input type="text" class="ans" data-correct="adios">, Luis. ¡Que tengas un buen día!</p>
+            `
+        }
+    ];
+
+    let indiceParadaActual = 0;
+    let bloqueado = false;
+
+    audio.addEventListener('timeupdate', () => {
+        if (indiceParadaActual < paradas.length && !bloqueado) {
+            const parada = paradas[indiceParadaActual];
+            
+            if (audio.currentTime >= parada.tiempo) {
+                bloqueado = true;
+                audio.pause();
+                audio.currentTime = parada.tiempo; 
+                mostrarPregunta(parada);
+            }
+        }
+    });
+
+    function mostrarPregunta(parada) {
+        contenidoPregunta.innerHTML = parada.html;
+        zonaInteractiva.style.display = 'block';
+        feedback.innerText = "";
+        audio.controls = false; 
+    }
+
+    function verificarParadaActual() {
+        const inputs = document.querySelectorAll('.ans');
+        let todasCorrectas = true;
+
+        inputs.forEach(input => {
+            const respuestaUsuario = input.value.toLowerCase().trim();
+            const respuestaCorrecta = input.getAttribute('data-correct');
+
+            if (respuestaUsuario === respuestaCorrecta) {
+                input.style.borderColor = "green";
+                input.style.backgroundColor = "#e8f5e9";
+            } else {
+                input.style.borderColor = "red";
+                input.style.backgroundColor = "#ffebee";
+                todasCorrectas = false;
+            }
+        });
+
+        if (todasCorrectas) {
+            feedback.className = "exito";
+            feedback.innerText = "¡Excelente! Todas las respuestas son correctas.";
+            
+            setTimeout(() => {
+                zonaInteractiva.style.display = 'none';
+                indiceParadaActual++; 
+                bloqueado = false; 
+                audio.controls = true;
+                audio.play();
+            }, 1500);
+        } else {
+            feedback.className = "error";
+            feedback.innerText = "Alguna respuesta no es correcta. Revisa los cuadros en rojo.";
+        }
+    }
+</script>
+
+</body>
+</html>
