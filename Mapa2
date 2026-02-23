@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venezuela - Región Pokémon</title>
+    
+    <!-- Fuente estilo 8-bits de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #2c3e50; /* Fondo oscuro alrededor del juego */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Press Start 2P', cursive; /* Letra de videojuego */
+        }
+
+        /* Pantalla del juego (El mapa) */
+        #game-screen {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            background-color: #85C1E9; /* Color de agua/océano de fondo */
+            border: 8px solid #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* Imagen de fondo del mapa de Venezuela */
+        #venezuela-map {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            /* Aquí usamos un mapa verde silueta temporal. Luego lo cambiarás por tu dibujo pixel art */
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Venezuela_location_map.svg/800px-Venezuela_location_map.svg.png');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.9;
+        }
+
+        /* Estilo para los lugares (Sprites) */
+        .sprite {
+            position: absolute;
+            font-size: 30px; /* Tamaño del emoji o icono */
+            cursor: pointer;
+            transition: transform 0.1s;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        /* Animación cuando pasas el mouse (salta un poquito) */
+        .sprite:hover {
+            transform: scale(1.3) translateY(-5px);
+        }
+
+        /* Caja de diálogo estilo Pokémon */
+        #dialog-box {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            height: 100px;
+            background-color: white;
+            border: 6px solid #34495e;
+            border-radius: 10px;
+            padding: 15px;
+            box-sizing: border-box;
+            display: none; /* Oculto hasta que se haga clic */
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.3);
+        }
+
+        /* Triangulito en la caja de diálogo */
+        #dialog-box::after {
+            content: '▼';
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-size: 12px;
+            color: #e74c3c;
+            animation: blink 1s infinite;
+        }
+
+        #dialog-text {
+            font-size: 12px;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Contenedor principal del "Juego" -->
+    <div id="game-screen">
+        
+        <!-- El mapa base -->
+        <div id="venezuela-map"></div>
+
+        <!-- SPRITES DE LOS LUGARES (Ubicados con top y left en porcentajes) -->
+        <!-- Salto Ángel -->
+        <div class="sprite" style="top: 65%; left: 70%;" onclick="mostrarDialogo('¡Has encontrado el SALTO ÁNGEL! La cascada más alta del mundo... Se dice que Pokémon legendarios habitan en la cima del Auyantepuy.')">
+            🌊
+        </div>
+
+        <!-- Relámpagos del Catatumbo -->
+        <div class="sprite" style="top: 35%; left: 20%;" onclick="mostrarDialogo('¡Cuidado! Zona de los RELÁMPAGOS DEL CATATUMBO. Las tormentas eléctricas aquí son eternas. Es el hábitat perfecto para los Pokémon tipo Eléctrico.')">
+            ⚡
+        </div>
+
+        <!-- Médanos de Coro -->
+        <div class="sprite" style="top: 15%; left: 45%;" onclick="mostrarDialogo('Has llegado a los MÉDANOS DE CORO. Un desierto abrasador. La arena cambia de lugar con el viento... necesitas agua para cruzar.')">
+            🏜️
+        </div>
+
+        <!-- Monte Roraima -->
+        <div class="sprite" style="top: 75%; left: 82%;" onclick="mostrarDialogo('Este es el MONTE RORAIMA. Un tepuy milenario. El terreno parece sacado de la prehistoria y el suelo está cubierto de cristales.')">
+            ⛰️
+        </div>
+
+        <!-- Caja de texto que aparece al hacer clic -->
+        <div id="dialog-box" onclick="cerrarDialogo()">
+            <div id="dialog-text"></div>
+        </div>
+
+    </div>
+
+    <script>
+        let intervalId; // Para controlar el efecto de escritura
+
+        function mostrarDialogo(texto) {
+            const dialogBox = document.getElementById('dialog-box');
+            const dialogText = document.getElementById('dialog-text');
+            
+            // Mostrar la caja
+            dialogBox.style.display = 'block';
+            dialogText.innerHTML = ''; // Limpiar texto anterior
+            
+            // Detener cualquier animación previa
+            if (intervalId) clearInterval(intervalId);
+
+            // Efecto de máquina de escribir
+            let i = 0;
+            intervalId = setInterval(function() {
+                if (i < texto.length) {
+                    dialogText.innerHTML += texto.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(intervalId); // Detener cuando termine de escribir
+                }
+            }, 40); // Velocidad de escritura (40 milisegundos por letra)
+        }
+
+        // Función para cerrar la caja si haces clic sobre ella
+        function cerrarDialogo() {
+            document.getElementById('dialog-box').style.display = 'none';
+        }
+    </script>
+
+</body>
+</html>
