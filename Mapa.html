@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maravillas de Venezuela</title>
+    
+    <!-- Librería CSS de Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        /* El mapa ocupará toda la pantalla */
+        #map {
+            width: 100vw;
+            height: 100vh; 
+        }
+        /* Estilos para el cuadro de información (Popup) */
+        .popup-content {
+            text-align: center;
+        }
+        .popup-content img {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .popup-content h3 {
+            margin: 0 0 5px 0;
+            color: #d32f2f;
+        }
+        .popup-content p {
+            margin: 0;
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Contenedor del Mapa -->
+    <div id="map"></div>
+
+    <!-- Librería JS de Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script>
+        // 1. Inicializar el mapa centrado en Venezuela
+        // Coordenadas: [Latitud, Longitud], Nivel de Zoom: 6
+        var map = L.map('map').setView([7.5, -66.0], 6);
+
+        // 2. Cargar los "Tiles" (el diseño del mapa base desde OpenStreetMap)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // 3. Crear una lista (Array) con los lugares increíbles
+        var lugares = [
+            {
+                nombre: "Salto Ángel",
+                coordenadas: [5.9675, -62.5355],
+                descripcion: "La cascada de agua más alta del mundo (979 metros), ubicada en el Parque Nacional Canaima.",
+                imagen: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Salto_Angel_2.jpg/320px-Salto_Angel_2.jpg"
+            },
+            {
+                nombre: "Relámpagos del Catatumbo",
+                coordenadas: [9.3436, -71.7294],
+                descripcion: "Un fenómeno meteorológico único en el mundo que produce tormentas eléctricas casi continuas.",
+                imagen: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Catatumbo_lightning_%282%29.jpg/320px-Catatumbo_lightning_%282%29.jpg"
+            },
+            {
+                nombre: "Médanos de Coro",
+                coordenadas: [11.4534, -69.6586],
+                descripcion: "Un desierto en constante movimiento en la costa del Mar Caribe.",
+                imagen: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Medanos_de_Coro_2.jpg/320px-Medanos_de_Coro_2.jpg"
+            },
+            {
+                nombre: "Archipiélago Los Roques",
+                coordenadas: [11.8521, -66.7583],
+                descripcion: "Un paraíso de aguas cristalinas, barreras de coral y arenas blancas.",
+                imagen: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Los_Roques_Cayo_de_Agua.jpg/320px-Los_Roques_Cayo_de_Agua.jpg"
+            },
+            {
+                nombre: "Monte Roraima",
+                coordenadas: [5.1983, -60.7333],
+                descripcion: "El tepuy más alto de la sierra de Pacaraima, una de las formaciones geológicas más antiguas de la Tierra.",
+                imagen: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Mount_Roraima_in_Venezuela.jpg/320px-Mount_Roraima_in_Venezuela.jpg"
+            }
+        ];
+
+        // 4. Recorrer la lista y añadir los marcadores al mapa
+        lugares.forEach(function(lugar) {
+            // Crear el contenido HTML del popup
+            var popupHTML = `
+                <div class="popup-content">
+                    <img src="${lugar.imagen}" alt="${lugar.nombre}">
+                    <h3>${lugar.nombre}</h3>
+                    <p>${lugar.descripcion}</p>
+                </div>
+            `;
+
+            // Añadir el marcador al mapa con su popup
+            L.marker(lugar.coordenadas)
+                .addTo(map)
+                .bindPopup(popupHTML);
+        });
+    </script>
+</body>
+</html>
